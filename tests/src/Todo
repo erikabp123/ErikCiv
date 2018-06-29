@@ -1,0 +1,54 @@
+Unit:
+[] performSpecialAction() does nothing (REQUIRES WORLD IMPL)
+[x] getType() returns unit type
+    [x] Archer returns ARCHER
+    [x] Legion returns LEGION
+    [x] Worker returns WORKER
+[x] getOwner returns correct owner
+    [x] returns a Player object
+[x] getRemainingMoveCount() returns move count
+    [x] Default is 2
+[x] move(int distance) removes distance from remainingMoveCount
+    [x] After move(1), should return 1
+    [x] After move(2), should return 0
+----------------------------------------------------------------
+City:
+[x] getOwner() returns correct owner
+    []x returns the same Player object as was passed to it originally, if setOwner() isn't called
+[x] getProduction() returns correct production
+    [x] returns null if setProduction() is not called
+----------------------------------------------------------------
+Player:
+[x] getColor() returns correct color
+[x] Starting wood is 50
+[x] Starting food is 100
+[x] starting ore is 20
+----------------------------------------------------------------
+World:
+[] World string array parses correct result
+    [x] 0-index of first array is Terrain level
+        [x] M = mountain
+        [x] O = Ocean
+        [x] H = Hills
+        [x] P = Plains
+        [x] F = Forest
+        [x] . seperates each tile
+        [x] String may only contain the above
+    [x] 1-index of first array is City level
+        [x] - = nothing
+        [x] First Symbol is color
+            [x] B = Blue
+            [x] R = Red
+        [x] Second Symbol is type
+            [x] C = City
+        [x] . seperates each tile
+        [x] All chars must be one of the above or string is invalid
+    [x] 2-index of first array is Unit level
+        [x] - = nothing
+        [x] First Symbol is color
+            [x] B = Blue
+            [x] R = Red
+        [x] Second Symbol is type
+            [x] A = Archer
+            [x] L = Legion
+            [x] W = Worker
