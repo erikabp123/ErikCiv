@@ -1,9 +1,9 @@
-package com.erikpoerksen.blackjack.GameLogic.Implementations;
+package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.Position;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.TerrainTypes;
-import com.erikpoerksen.blackjack.GameLogic.Structure.*;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
+import com.erikpoerksen.erikciv.GameLogic.Structure.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

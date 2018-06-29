@@ -1,6 +1,6 @@
-package com.erikpoerksen.blackjack.GameLogic.Structure;
+package com.erikpoerksen.erikciv.GameLogic.Structure;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.PlayerTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
 
 public interface Player {
 

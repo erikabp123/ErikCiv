@@ -1,9 +1,9 @@
-package com.erikpoerksen.blackjack.client;
+package com.erikpoerksen.erikciv.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.erikpoerksen.blackjack.GameMain;
+import com.erikpoerksen.erikciv.GameMain;
 
 public class HtmlLauncher extends GwtApplication {
 

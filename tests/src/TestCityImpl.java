@@ -1,9 +1,9 @@
-import com.erikpoerksen.blackjack.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.UnitTypes;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.CityImpl;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.PlayerImpl;
-import com.erikpoerksen.blackjack.GameLogic.Structure.City;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Player;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Implementations.CityImpl;
+import com.erikpoerksen.erikciv.GameLogic.Implementations.PlayerImpl;
+import com.erikpoerksen.erikciv.GameLogic.Structure.City;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Player;
 import org.junit.Before;
 import org.junit.Test;
 

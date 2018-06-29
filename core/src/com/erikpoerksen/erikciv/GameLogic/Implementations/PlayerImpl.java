@@ -1,7 +1,7 @@
-package com.erikpoerksen.blackjack.GameLogic.Implementations;
+package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Player;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Player;
 
 public class PlayerImpl implements Player {
 

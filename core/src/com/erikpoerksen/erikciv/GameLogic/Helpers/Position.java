@@ -1,4 +1,4 @@
-package com.erikpoerksen.blackjack.GameLogic.Helpers;
+package com.erikpoerksen.erikciv.GameLogic.Helpers;
 
 public class Position {
 

@@ -1,6 +1,6 @@
-package com.erikpoerksen.blackjack.GameLogic.Structure;
+package com.erikpoerksen.erikciv.GameLogic.Structure;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
 
 public interface City {
 

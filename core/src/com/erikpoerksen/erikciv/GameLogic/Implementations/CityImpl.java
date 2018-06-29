@@ -1,8 +1,8 @@
-package com.erikpoerksen.blackjack.GameLogic.Implementations;
+package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.UnitTypes;
-import com.erikpoerksen.blackjack.GameLogic.Structure.City;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Player;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Structure.City;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Player;
 
 public class CityImpl implements City {
 

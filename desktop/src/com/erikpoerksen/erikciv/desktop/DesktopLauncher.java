@@ -1,8 +1,8 @@
-package com.erikpoerksen.blackjack.desktop;
+package com.erikpoerksen.erikciv.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.erikpoerksen.blackjack.GameMain;
+import com.erikpoerksen.erikciv.GameMain;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

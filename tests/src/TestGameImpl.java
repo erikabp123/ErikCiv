@@ -1,19 +1,11 @@
-import com.erikpoerksen.blackjack.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.Position;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.TerrainTypes;
-import com.erikpoerksen.blackjack.GameLogic.Helpers.UnitTypes;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.CityImpl;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.GameImpl;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.PlayerImpl;
-import com.erikpoerksen.blackjack.GameLogic.Implementations.WorldImpl;
-import com.erikpoerksen.blackjack.GameLogic.Structure.City;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Game;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Player;
-import com.erikpoerksen.blackjack.GameLogic.Structure.World;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Implementations.GameImpl;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Game;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

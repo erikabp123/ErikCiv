@@ -6,7 +6,7 @@
 	<inherits name='Box2DLights' />
 
 	<inherits name='GameMain' />
-	<entry-point class='com.erikpoerksen.blackjack.client.HtmlLauncher' />
+	<entry-point class='com.erikpoerksen.erikciv.client.HtmlLauncher' />
 	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 	<set-configuration-property name="gdx.assetpath" value="../core/assets" />
 </module>

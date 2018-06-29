@@ -1,8 +1,8 @@
-package com.erikpoerksen.blackjack.GameLogic.Implementations;
+package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.blackjack.GameLogic.Helpers.UnitTypes;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Player;
-import com.erikpoerksen.blackjack.GameLogic.Structure.Unit;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Player;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
 
 public class UnitImpl implements Unit {
 

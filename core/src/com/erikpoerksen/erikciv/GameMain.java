@@ -1,4 +1,4 @@
-package com.erikpoerksen.blackjack;
+package com.erikpoerksen.erikciv;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
