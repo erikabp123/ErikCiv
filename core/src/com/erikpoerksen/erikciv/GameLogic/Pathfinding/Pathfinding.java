@@ -50,6 +50,9 @@ public class Pathfinding {
         if(node == null){
             return;
         }
+        if(node.getLocation().equals(from)){
+            return;
+        }
         path.add(node);
         addOriginNodes(node.getOrigin());
     }
