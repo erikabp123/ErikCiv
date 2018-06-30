@@ -4,6 +4,7 @@ import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
 import com.erikpoerksen.erikciv.GameLogic.Implementations.GameImpl;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Game;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,6 +95,30 @@ public class TestGameImpl {
         assertNotNull(game.getUnitAtPosition(new Position(0, 1)));
         assertThat(game.getUnitAtPosition(new Position(0, 1)).getOwner().getColor(), is(PlayerTypes.RED));
         assertThat(game.getUnitAtPosition(new Position(0, 1)).getType(), is(UnitTypes.ARCHER));
+    }
+
+    @Test
+    public void moveUnit1ShouldReturnTrueOntoPlains(){
+        Position from = new Position(0, 1);
+        game.endTurn(); // make it RED's turn
+        boolean result = game.moveUnit(from, new Position(0, 2));
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void moveUnit2ShouldReturnFalse(){
+        Position from = new Position(0, 1);
+        game.endTurn(); // make it RED's turn
+        boolean result = game.moveUnit(from, new Position(0, 3));
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void moveUnitShouldReturnFalseOntoOcean(){
+        Position from = new Position(1, 3);
+        game.endTurn(); // make it RED's turn
+        boolean result = game.moveUnit(from, new Position(2, 4));
+        assertThat(result, is(false));
     }
 
 }

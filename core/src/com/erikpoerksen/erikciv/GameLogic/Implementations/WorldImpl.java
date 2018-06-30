@@ -1,9 +1,6 @@
 package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.*;
 import com.erikpoerksen.erikciv.GameLogic.Structure.*;
 
 import java.util.ArrayList;
@@ -11,15 +8,13 @@ import java.util.regex.Pattern;
 
 public class WorldImpl implements World {
 
-    private int rows;
-    private int columns;
+    public static final int rows = 10;
+    public static final int columns = 10;
     private ArrayList<Player> players;
 
     Tile[][] world;
 
     public WorldImpl(String[][] worldString, ArrayList<Player> players){
-        this.rows = 10;
-        this.columns = 10;
         this.players = players;
         world = parseWorldString(worldString);
     }
@@ -156,7 +151,9 @@ public class WorldImpl implements World {
 
     @Override
     public void moveUnit(Position from, Position to) {
-        Unit toBeMoved = world[from.getX()][from.getY()].getOccupyingUnit();
+        Unit toBeMoved = getUnitAtPosition(from);
+        int distance = HelperMethods.calculateShortestDirectDistance(from, to);
+        toBeMoved.move(distance);
         world[to.getX()][to.getY()].setOccupyingUnit(toBeMoved);
         world[from.getX()][from.getY()].setOccupyingUnit(null);
     }

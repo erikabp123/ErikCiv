@@ -1,5 +1,6 @@
 package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
+import com.erikpoerksen.erikciv.GameLogic.Helpers.HelperMethods;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
@@ -23,8 +24,21 @@ public class GameImpl implements Game {
 
     @Override
     public boolean moveUnit(Position from, Position to) {
+        Unit unit = world.getUnitAtPosition(from);
+        if(unit == null || unit.getOwner() != getPlayerInTurn() || unit.getRemainingMoveCount() < 1){
+            return false;
+        }
+        if(getTerrainAtPosition(to) == TerrainTypes.OCEAN){
+            return false;
+        }
+        int directDistance = HelperMethods.calculateShortestDirectDistance(from, to);
+        if(directDistance == 1){
+            world.moveUnit(from, to);
+            return true;
+        }
         return false;
     }
+
 
     @Override
     public Player getPlayerInTurn() {
