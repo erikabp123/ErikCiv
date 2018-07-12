@@ -159,4 +159,9 @@ public class TestWorldImpl {
         assertNull(world.getUnitAtPosition(start));
     }
 
+    @Test
+    public void getAllUnitsShouldReturn8Units(){
+        assertThat(world.getAllUnits().size(), is(8));
+    }
+
 }

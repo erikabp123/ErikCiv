@@ -14,4 +14,18 @@ public interface Unit {
 
     void move(int distance);
 
+    void resetMoveCount();
+
+    int getDefaultMoveCount();
+
+    int getMaxHealth();
+
+    int getCurrentHealth();
+
+    int getDefense();
+
+    int getAttack();
+
+    void sustainDamage(int rawAmount);
+
 }

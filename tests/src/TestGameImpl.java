@@ -106,11 +106,11 @@ public class TestGameImpl {
     }
 
     @Test
-    public void moveUnit2ShouldReturnFalse(){
+    public void moveUnit2ShouldReturnTrue(){
         Position from = new Position(0, 1);
         game.endTurn(); // make it RED's turn
         boolean result = game.moveUnit(from, new Position(0, 3));
-        assertThat(result, is(false));
+        assertThat(result, is(true));
     }
 
     @Test
@@ -120,5 +120,53 @@ public class TestGameImpl {
         boolean result = game.moveUnit(from, new Position(2, 4));
         assertThat(result, is(false));
     }
+
+    @Test
+    public void moveUnitShouldReturnFalseOntoAlliedUnit(){
+        Position from = new Position(1, 3);
+        Position to = new Position(1, 4);
+        game.endTurn(); // make it RED's turn
+        boolean result = game.moveUnit(from, to);
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void moveUnitShouldReturnFalseIfMoreThanMoveCount(){
+        Position from = new Position(1, 3);
+        Position to = new Position(1, 6);
+        game.endTurn(); // make it RED's turn
+        boolean result = game.moveUnit(from, to);
+        assertThat(result, is(false ));
+    }
+
+    @Test
+    public void moveUnitShouldReturnFalseIfEnemyIsBlockingOnlyPath(){
+        game.moveUnit(new Position(7, 6), new Position(3, 6));
+        game.endTurn();
+        game.moveUnit(new Position(1, 4), new Position(0, 3)); // move red unit to block path
+        game.endTurn();
+        game.moveUnit(new Position(3, 6), new Position(2, 6));
+        game.endTurn();
+        boolean result = game.moveUnit(new Position(3, 6), new Position(1, 2)); // attempt to move unit past blockade
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void moveUnitAttackFromArcherOntoLegionShouldNotKillLegion(){
+        Unit attackingUnit = game.getUnitAtPosition(new Position(7, 6));
+        Unit defendingUnit = game.getUnitAtPosition(new Position(1, 4));
+        game.moveUnit(new Position(7, 6), new Position(3, 6));
+        game.endTurn(); // make it red's turn
+        game.endTurn(); // make it blue's turn again
+        boolean result = game.moveUnit(new Position(3, 6), new Position(1, 4)); // move legion onto other legion
+        assertThat(result, is(true));
+        assertThat(attackingUnit.getRemainingMoveCount(), is(0));
+        assertThat(attackingUnit.getCurrentHealth(), is(attackingUnit.getMaxHealth()));
+        assertThat(defendingUnit.getOwner().getColor(), is(PlayerTypes.RED));
+        assertThat(defendingUnit.getCurrentHealth(), is(defendingUnit.getMaxHealth()));
+    }
+
+
+
 
 }

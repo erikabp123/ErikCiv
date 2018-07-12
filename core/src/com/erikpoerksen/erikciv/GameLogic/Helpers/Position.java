@@ -30,5 +30,10 @@ public class Position {
         return position.x == x && position.y == y;
     }
 
+    @Override
+    public String toString(){
+        return "(" + getX() + "," + getY() +")";
+    }
+
 
 }

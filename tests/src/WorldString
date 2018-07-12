@@ -1,13 +1,14 @@
-"F.P.P.P.P.F.O.O.M.P",
-"F.F.P.P.P.F.F.O.M.P",
-"F.F.F.O.O.O.F.M.M.P",
-"O.O.O.O.O.F.F.F.F.F",
-"O.O.P.P.P.P.F.F.P.F",
-"O.M.M.M.P.P.P.F.P.M",
-"M.M.M.M.M.P.P.P.P.P",
-"M.M.M.M.P.P.P.H.H.H",
-"P.M.M.P.P.P.P.P.H.H",
-"H.H.H.P.P.F.O.P.F.H"
+   0 1 2 3 4 5 6 7 8 9
+0 "F.P.P.P.P.F.O.O.M.P",
+1 "F.F.P.P.P.F.F.O.M.P",
+2 "F.F.F.O.O.O.F.M.M.P",
+3 "O.O.O.O.O.F.F.F.F.F",
+4 "O.O.P.P.P.P.F.F.P.F",
+5 "O.M.M.M.P.P.P.F.P.M",
+6 "M.M.M.M.M.P.P.P.P.P",
+7 "M.M.M.M.P.P.P.H.H.H",
+8 "P.M.M.P.P.P.P.P.H.H",
+9 "H.H.H.P.P.F.O.P.F.H"
 
 "-.RC.-.-.-.-.-.-.-.-",
 "-.-.-.-.-.-.-.-.-.-",

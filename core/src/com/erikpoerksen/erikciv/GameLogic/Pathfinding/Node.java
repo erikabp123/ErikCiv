@@ -21,7 +21,7 @@ public class Node implements Comparable<Node>{
 
     @Override
     public String toString(){
-        return "NODE(" + location.getX() + "," + location.getY() +")";
+        return "NODE: (" + origin.location.getX() + "," + origin.location.getY() +") >> " + "(" + location.getX() + "," + location.getY() +")";
     }
 
 

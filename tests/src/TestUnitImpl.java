@@ -38,7 +38,13 @@ public class TestUnitImpl {
     }
 
     @Test
-    public void getRemainingMoveCountShouldReturn2ByDefault(){
+    public void getRemainingMoveCountShouldReturn4ForAllButWorkerByDefault(){
+        assertThat(unit.getRemainingMoveCount(), is(4));
+    }
+
+    @Test
+    public void getRemainingMoveCountShouldReturn2ForWorkerByDefault(){
+        unit = new UnitImpl(player, UnitTypes.WOKER);
         assertThat(unit.getRemainingMoveCount(), is(2));
     }
 

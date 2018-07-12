@@ -92,14 +92,12 @@ public class Pathfinding {
         return node.getLocation().equals(to);
     }
 
+    private boolean isGoalPosition(Position position){
+        return position.equals(to);
+    }
+
     private void removeAlreadyProcessed(ArrayList<Node> neighbors){
         neighbors.removeIf(n -> listContainsNode(processed, n));
-
-//        for(Node node : neighbors){
-//            if(listContainsNode(processed, node)){
-//                neighbors.remove(node);
-//            }
-//        }
     }
 
     private boolean listContainsNode(ArrayList<Node> nodes, Node node){
@@ -115,7 +113,7 @@ public class Pathfinding {
     private ArrayList<Node> findValidNeighboringNodes(Node origin){
         Position location = origin.getLocation();
 
-        ArrayList<Position> locations = new ArrayList<Position>();
+        ArrayList<Position> locations = new ArrayList<>();
         Position nw = new Position(location.getX()-1, location.getY()-1);
         Position n = new Position(location.getX()-1, location.getY());
         Position ne = new Position(location.getX()-1, location.getY()+1);
@@ -148,43 +146,16 @@ public class Pathfinding {
         locations.removeIf(n -> n.getY() < 0);
         locations.removeIf(n -> n.getX() >= WorldImpl.rows);
         locations.removeIf(n -> n.getY() >= WorldImpl.columns);
-
-
-
-
-//        for(Position location : locations){
-//            if(location.getX() < 0 || location.getX() >= WorldImpl.rows){
-//                locations.remove(location);
-//            } else if(location.getY() < 0 || location.getY() >= WorldImpl.columns){
-//                locations.remove(location);
-//            }
-//        }
     }
 
     private void removeLocationsWithInvalidTerrain(ArrayList<Position> locations){
         locations.removeIf(p -> game.getTerrainAtPosition(p) == TerrainTypes.OCEAN);
         locations.removeIf(p -> game.getTerrainAtPosition(p) == TerrainTypes.MOUNTAIN);
-
-//        for(Position location : locations){
-//            if(game.getTerrainAtPosition(location) == TerrainTypes.OCEAN){
-//                locations.remove(location);
-//            }
-//            else if(game.getTerrainAtPosition(location) == TerrainTypes.MOUNTAIN){
-//                locations.remove(location);
-//            }
-//        }
     }
 
     private void removeLocationsWithEnemies(ArrayList<Position> locations){
-        locations.removeIf(p -> game.getUnitAtPosition(p) != null &&
+        locations.removeIf(p -> !isGoalPosition(p) && game.getUnitAtPosition(p) != null &&
                 game.getUnitAtPosition(p).getOwner() != game.getPlayerInTurn());
-
-//        for(Position location : locations){
-//            Unit unitAtLocation = game.getUnitAtPosition(location);
-//            if(unitAtLocation != null && unitAtLocation.getOwner() != game.getPlayerInTurn()){
-//                locations.remove(location);
-//            }
-//        }
     }
 
     private Node convertLocationToNode(Position location, Node origin){
@@ -193,7 +164,7 @@ public class Pathfinding {
     }
 
     private ArrayList<Node> convertAllLocationsToNodes(ArrayList<Position> locations, Node origin){
-        ArrayList<Node> nodes = new ArrayList<Node>();
+        ArrayList<Node> nodes = new ArrayList<>();
         for(Position location : locations){
             nodes.add(convertLocationToNode(location, origin));
         }

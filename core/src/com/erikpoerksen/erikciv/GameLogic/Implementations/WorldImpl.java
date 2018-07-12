@@ -158,6 +158,26 @@ public class WorldImpl implements World {
         world[from.getX()][from.getY()].setOccupyingUnit(null);
     }
 
+    @Override
+    public ArrayList<Unit> getAllUnits(){
+        ArrayList<Unit> units = new ArrayList<>();
+        for(int row = 0; row<rows; row++){
+            for(int column = 0; column<columns; column++){
+                Position curPos = new Position(row, column);
+                Unit unit = getUnitAtPosition(curPos);
+                if(unit != null){
+                    units.add(unit);
+                }
+            }
+        }
+        return units;
+    }
+
+    @Override
+    public void removeUnit(Position position) {
+        world[position.getX()][position.getY()].setOccupyingUnit(null);
+    }
+
     private class Tile {
 
         private TerrainTypes terrain;
