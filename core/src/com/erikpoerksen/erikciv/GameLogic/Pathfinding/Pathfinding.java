@@ -145,8 +145,8 @@ public class Pathfinding {
     private void removeLocationsOutsideWorld(ArrayList<Position> locations){
         locations.removeIf(n -> n.getX() < 0);
         locations.removeIf(n -> n.getY() < 0);
-        locations.removeIf(n -> n.getX() >= GameConstants.xLength);
-        locations.removeIf(n -> n.getY() >= GameConstants.yLength);
+        locations.removeIf(n -> n.getX() >= GameConstants.X_LENGTH);
+        locations.removeIf(n -> n.getY() >= GameConstants.Y_LENGTH);
     }
 
     private void removeLocationsWithInvalidTerrain(ArrayList<Position> locations){

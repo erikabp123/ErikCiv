@@ -44,7 +44,7 @@ public class TestUnitImpl {
 
     @Test
     public void getRemainingMoveCountShouldReturn2ForWorkerByDefault(){
-        unit = new UnitImpl(player, UnitTypes.WOKER);
+        unit = new UnitImpl(player, UnitTypes.WORKER);
         assertThat(unit.getRemainingMoveCount(), is(2));
     }
 

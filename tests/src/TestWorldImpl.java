@@ -129,7 +129,7 @@ public class TestWorldImpl {
         Unit unit = world.getUnitAtPosition(new Position(1, 3));
         assertNotNull(unit);
         assertThat(unit.getOwner().getColor(), is(PlayerTypes.RED));
-        assertThat(unit.getType(), is(UnitTypes.WOKER));
+        assertThat(unit.getType(), is(UnitTypes.WORKER));
     }
 
     @Test

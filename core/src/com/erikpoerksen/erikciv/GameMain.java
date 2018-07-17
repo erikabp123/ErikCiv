@@ -5,29 +5,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.erikpoerksen.erikciv.Adapter.CityTile;
+import com.erikpoerksen.erikciv.Adapter.TerrainTile;
+import com.erikpoerksen.erikciv.Adapter.TileMap;
+import com.erikpoerksen.erikciv.Adapter.UnitTile;
+import com.erikpoerksen.erikciv.GameLogic.Implementations.GameImpl;
+
+import java.util.ArrayList;
 
 public class GameMain extends Game {
-	SpriteBatch batch;
-	Texture img;
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+	    this.setScreen(new MainGameScreen(this));
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+	    super.render();
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
+
 	}
 }

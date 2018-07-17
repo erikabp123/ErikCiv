@@ -23,4 +23,6 @@ public interface Game {
 
     Position findCityPosition(City toBeFound);
 
+    int getAge();
+
 }

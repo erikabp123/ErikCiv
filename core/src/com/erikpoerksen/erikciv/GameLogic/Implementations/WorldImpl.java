@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public class WorldImpl implements World {
 
-    private final int rows = GameConstants.xLength;
-    private final int columns = GameConstants.yLength;
+    private final int rows = GameConstants.X_LENGTH;
+    private final int columns = GameConstants.Y_LENGTH;
     private ArrayList<Player> players;
 
     Tile[][] world;

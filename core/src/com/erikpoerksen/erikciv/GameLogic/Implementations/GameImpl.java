@@ -14,13 +14,17 @@ public class GameImpl implements Game {
     World world;
     ArrayList<Player> players;
     GameMessages messages;
+    int age;
+    int turnCount;
 
     public GameImpl(String[][] worldString){
-        players = new ArrayList<Player>();
-        players.add(new PlayerImpl(PlayerTypes.BLUE));
-        players.add(new PlayerImpl(PlayerTypes.RED));
-        world = new WorldImpl(worldString, players);
-        messages = new GameMessages();
+        this.players = new ArrayList<Player>();
+        this.players.add(new PlayerImpl(PlayerTypes.BLUE));
+        this.players.add(new PlayerImpl(PlayerTypes.RED));
+        this.world = new WorldImpl(worldString, players);
+        this.messages = new GameMessages();
+        this.age = GameConstants.STARTING_AGE;
+        this.turnCount = 0;
     }
 
 
@@ -108,11 +112,19 @@ public class GameImpl implements Game {
 
     @Override
     public void endTurn() {
+        turnCount++;
+        if(turnCount == players.size() - 1){
+            age += GameConstants.SPEED;
+            turnCount = 0;
+        }
         Collections.rotate(players, -1);
-
+        if(age == GameConstants.STARTING_AGE){
+            return; // if it's the first round, no player should be getting an unfair advantage
+        }
+        startOfTurnPreparations();
     }
 
-    private void endOfTurnPreparations(){
+    private void startOfTurnPreparations(){
         ArrayList<Unit> units = world.getAllUnits();
         for(Unit unit : units){
             if(unit.getOwner() == getPlayerInTurn()){
@@ -126,9 +138,11 @@ public class GameImpl implements Game {
             if(city.getOwner() == getPlayerInTurn()){
                 city.increaseProductionCount(1);
                 UnitTypes cityProduction = city.getProduction();
+                if(world.getUnitAtPosition(position) != null){
+                    continue; // If there is already a unit on the city tile, you can't spawn a new one
+                }
                 boolean productionCompleted = city.finishProduction();
                 if(productionCompleted){
-                    // CURRENTLY OVERWRITES UNITS ALREADY AT THE CITY, FIX THIS ERIK YOU SHITTER
                     world.placeUnitAtPosition(position, getPlayerInTurn(), cityProduction);
                 }
             }
@@ -145,6 +159,11 @@ public class GameImpl implements Game {
             }
         }
         return null; // city doesn't exist in our world
+    }
+
+    @Override
+    public int getAge() {
+        return age;
     }
 
     @Override

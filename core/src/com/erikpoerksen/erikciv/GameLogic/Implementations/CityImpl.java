@@ -43,6 +43,9 @@ public class CityImpl implements City {
 
     @Override
     public boolean finishProduction() {
+        if(production == null){
+            return false;
+        }
         int cost = getProduction().getValue();
         if(cost > productionCount){
             return false;
