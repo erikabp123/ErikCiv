@@ -8,9 +8,12 @@ public class CityImpl implements City {
 
     private Player owner;
     private UnitTypes production;
+    private int productionCount;
 
     public CityImpl(Player owner){
         this.owner = owner;
+        production = null;
+        productionCount = 0;
     }
 
     @Override
@@ -31,5 +34,21 @@ public class CityImpl implements City {
     @Override
     public void annexCity(Player newOwner) {
         this.owner = newOwner;
+    }
+
+    @Override
+    public void increaseProductionCount(int amount) {
+        productionCount += amount;
+    }
+
+    @Override
+    public boolean finishProduction() {
+        int cost = getProduction().getValue();
+        if(cost > productionCount){
+            return false;
+        }
+        productionCount -= cost;
+        setProduction(null); // stop producing stuff
+        return true;
     }
 }

@@ -11,6 +11,10 @@ public class HelperMethods {
         return  distanceX;
     }
 
+    public static int roundedIntegerDivision(int numerator, int denominator){
+        return (numerator*10/denominator + 5)/10;
+    }
+
 
 
 

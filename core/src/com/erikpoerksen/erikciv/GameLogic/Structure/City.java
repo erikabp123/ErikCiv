@@ -11,4 +11,8 @@ public interface City {
     void setProduction(UnitTypes production);
 
     void annexCity(Player newOwner);
+
+    void increaseProductionCount(int amount);
+
+    boolean finishProduction();
 }

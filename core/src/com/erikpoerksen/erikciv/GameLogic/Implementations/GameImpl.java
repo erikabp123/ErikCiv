@@ -1,26 +1,26 @@
 package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
-import com.erikpoerksen.erikciv.GameLogic.Helpers.HelperMethods;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.PlayerTypes;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
-import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.*;
 import com.erikpoerksen.erikciv.GameLogic.Pathfinding.Node;
 import com.erikpoerksen.erikciv.GameLogic.Pathfinding.Pathfinding;
 import com.erikpoerksen.erikciv.GameLogic.Structure.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class GameImpl implements Game {
 
     World world;
     ArrayList<Player> players;
+    GameMessages messages;
 
     public GameImpl(String[][] worldString){
         players = new ArrayList<Player>();
         players.add(new PlayerImpl(PlayerTypes.BLUE));
         players.add(new PlayerImpl(PlayerTypes.RED));
         world = new WorldImpl(worldString, players);
+        messages = new GameMessages();
     }
 
 
@@ -65,13 +65,23 @@ public class GameImpl implements Game {
         Unit defendingUnit = getUnitAtPosition(defender);
 
         defendingUnit.sustainDamage(attackingUnit.getAttack());
-        attackingUnit.move(attackingUnit.getRemainingMoveCount()); //set move count to 0
+        attackingUnit.sustainDamage(defendingUnit.getAttack());
+        attackingUnit.move(attackingUnit.getRemainingMoveCount()); //set move count to 0 for attacker
 
-        if(defendingUnit.getCurrentHealth() > 0){
-            return false;
+        boolean attackerDied = (attackingUnit.getCurrentHealth() < 0);
+        boolean defenderDied = (defendingUnit.getCurrentHealth() < 0);
+
+        if(attackerDied){
+            messages.addMessage(attackingUnit.getOwner().getColor() + "'s " + attackingUnit.getType() + " died in combat!");
+            world.removeUnit(attacker); // attacker died
         }
-
-        world.removeUnit(defender);
+        if(defenderDied){
+            messages.addMessage(defendingUnit.getOwner().getColor() + "'s " + defendingUnit.getType() + " died in combat!");
+            world.removeUnit(defender);
+        }
+        if(attackerDied || !defenderDied){
+            return  false;
+        }
         return true;
     }
 
@@ -99,14 +109,54 @@ public class GameImpl implements Game {
     @Override
     public void endTurn() {
         Collections.rotate(players, -1);
+
+    }
+
+    private void endOfTurnPreparations(){
         ArrayList<Unit> units = world.getAllUnits();
         for(Unit unit : units){
             if(unit.getOwner() == getPlayerInTurn()){
                 unit.resetMoveCount();
             }
         }
+
+        HashMap<Position, City> cities = world.getAllCitiesWithPositions();
+        for(Position position : cities.keySet()){
+            City city = cities.get(position);
+            if(city.getOwner() == getPlayerInTurn()){
+                city.increaseProductionCount(1);
+                UnitTypes cityProduction = city.getProduction();
+                boolean productionCompleted = city.finishProduction();
+                if(productionCompleted){
+                    // CURRENTLY OVERWRITES UNITS ALREADY AT THE CITY, FIX THIS ERIK YOU SHITTER
+                    world.placeUnitAtPosition(position, getPlayerInTurn(), cityProduction);
+                }
+            }
+        }
     }
 
+    @Override
+    public Position findCityPosition(City toBeFound){
+        HashMap<Position, City> cities = world.getAllCitiesWithPositions();
+        for(Position position : cities.keySet()){
+            // we want to see if they are the EXACT same city object, not if they are equal
+            if(cities.get(position) == toBeFound){
+                return position;
+            }
+        }
+        return null; // city doesn't exist in our world
+    }
+
+    @Override
+    public World getWorld() {
+        return world;
+    }
+
+    @Override
+    public boolean placeCityAtPosition(Position position, Player owner) {
+        world.placeCityAtPosition(position, owner);
+        return true;
+    }
 
 
 }

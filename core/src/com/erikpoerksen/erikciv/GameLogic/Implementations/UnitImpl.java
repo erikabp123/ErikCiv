@@ -1,8 +1,12 @@
 package com.erikpoerksen.erikciv.GameLogic.Implementations;
 
+import com.erikpoerksen.erikciv.GameLogic.Helpers.HelperMethods;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Game;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Player;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
+import com.erikpoerksen.erikciv.GameLogic.Structure.World;
 
 public class UnitImpl implements Unit {
 
@@ -18,7 +22,7 @@ public class UnitImpl implements Unit {
     public UnitImpl(Player owner, UnitTypes type){
         this.owner = owner;
         this.type = type;
-        if(type == UnitTypes.WOKER){
+        if(type == UnitTypes.WORKER){
             this.remainingMoveCount = this.defaultMoveCount = 2;
             this.attack = 1;
             this.defense = 0;
@@ -40,8 +44,11 @@ public class UnitImpl implements Unit {
 
 
     @Override
-    public void performSpecialAction() {
-        // does nothing as of alpha
+    public void performSpecialAction(Position targetPosition, Game game) {
+        if(getType() == UnitTypes.WORKER){
+            game.placeCityAtPosition(targetPosition, game.getPlayerInTurn());
+            game.getWorld().removeUnit(targetPosition);
+        }
     }
 
     @Override
@@ -96,10 +103,8 @@ public class UnitImpl implements Unit {
 
     @Override
     public void sustainDamage(int rawAmount) {
-        if(defense >= rawAmount){
-            return;
-        }
-        currentHealth -= rawAmount-defense;
+        int damage = (HelperMethods.roundedIntegerDivision(rawAmount, defense) + 2);
+        currentHealth -= damage;
     }
 
 

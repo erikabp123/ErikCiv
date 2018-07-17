@@ -1,10 +1,11 @@
 package com.erikpoerksen.erikciv.GameLogic.Structure;
 
+import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.UnitTypes;
 
 public interface Unit {
 
-    void performSpecialAction();
+    void performSpecialAction(Position targetPosition, Game game);
 
     UnitTypes getType();
 

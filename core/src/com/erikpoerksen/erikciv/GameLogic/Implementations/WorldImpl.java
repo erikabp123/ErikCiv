@@ -4,12 +4,13 @@ import com.erikpoerksen.erikciv.GameLogic.Helpers.*;
 import com.erikpoerksen.erikciv.GameLogic.Structure.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class WorldImpl implements World {
 
-    public static final int rows = 10;
-    public static final int columns = 10;
+    private final int rows = GameConstants.xLength;
+    private final int columns = GameConstants.yLength;
     private ArrayList<Player> players;
 
     Tile[][] world;
@@ -122,7 +123,7 @@ public class WorldImpl implements World {
             return new UnitImpl(owner, UnitTypes.LEGION);
         }
         if(type.equals("W")){
-            return new UnitImpl(owner, UnitTypes.WOKER);
+            return new UnitImpl(owner, UnitTypes.WORKER);
         }
 
         return null; // shouldn't happen, string should be validated much earlier
@@ -176,6 +177,46 @@ public class WorldImpl implements World {
     @Override
     public void removeUnit(Position position) {
         world[position.getX()][position.getY()].setOccupyingUnit(null);
+    }
+
+    @Override
+    public void placeCityAtPosition(Position position, Player owner) {
+        world[position.getX()][position.getY()].setCity(new CityImpl(owner));
+    }
+
+    @Override
+    public void placeUnitAtPosition(Position position, Player owner, UnitTypes type) {
+        world[position.getX()][position.getY()].setOccupyingUnit(new UnitImpl(owner, type));
+    }
+
+    @Override
+    public ArrayList<City> getAllCities() {
+        ArrayList<City> cities = new ArrayList<>();
+        for(int row = 0; row<rows; row++){
+            for(int column = 0; column<columns; column++){
+                Position curPos = new Position(row, column);
+                City city = getCityAtPosition(curPos);
+                if(city != null){
+                    cities.add(city);
+                }
+            }
+        }
+        return cities;
+    }
+
+    @Override
+    public HashMap<Position, City> getAllCitiesWithPositions(){
+        HashMap<Position, City> cities = new HashMap<>();
+        for(int row = 0; row<rows; row++){
+            for(int column = 0; column<columns; column++){
+                Position curPos = new Position(row, column);
+                City city = getCityAtPosition(curPos);
+                if(city != null){
+                    cities.put(curPos, city);
+                }
+            }
+        }
+        return cities;
     }
 
     private class Tile {

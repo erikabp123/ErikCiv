@@ -1,5 +1,7 @@
 package com.erikpoerksen.erikciv.GameLogic.Helpers;
 
+import java.util.Arrays;
+
 public class Position {
 
     private int x;
@@ -28,6 +30,14 @@ public class Position {
         }
         Position position = (Position) o;
         return position.x == x && position.y == y;
+    }
+
+    @Override
+    public int hashCode(){
+        return Arrays.hashCode(new Object[] {
+                x,
+                y,
+        });
     }
 
     @Override

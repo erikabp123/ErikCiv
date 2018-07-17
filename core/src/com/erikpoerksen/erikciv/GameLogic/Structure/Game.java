@@ -17,4 +17,10 @@ public interface Game {
 
     void endTurn();
 
+    World getWorld();
+
+    boolean placeCityAtPosition(Position position, Player owner);
+
+    Position findCityPosition(City toBeFound);
+
 }

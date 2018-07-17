@@ -154,16 +154,18 @@ public class TestGameImpl {
     @Test
     public void moveUnitAttackFromArcherOntoLegionShouldNotKillLegion(){
         Unit attackingUnit = game.getUnitAtPosition(new Position(7, 6));
+        int attackerStartingHealth = attackingUnit.getCurrentHealth();
         Unit defendingUnit = game.getUnitAtPosition(new Position(1, 4));
+        int defenderStartingHealth = defendingUnit.getCurrentHealth();
         game.moveUnit(new Position(7, 6), new Position(3, 6));
         game.endTurn(); // make it red's turn
         game.endTurn(); // make it blue's turn again
         boolean result = game.moveUnit(new Position(3, 6), new Position(1, 4)); // move legion onto other legion
         assertThat(result, is(true));
         assertThat(attackingUnit.getRemainingMoveCount(), is(0));
-        assertThat(attackingUnit.getCurrentHealth(), is(attackingUnit.getMaxHealth()));
+        assertThat(attackingUnit.getCurrentHealth(), is(attackerStartingHealth - 3));
         assertThat(defendingUnit.getOwner().getColor(), is(PlayerTypes.RED));
-        assertThat(defendingUnit.getCurrentHealth(), is(defendingUnit.getMaxHealth()));
+        assertThat(defendingUnit.getCurrentHealth(), is(defenderStartingHealth - 3));
     }
 
 

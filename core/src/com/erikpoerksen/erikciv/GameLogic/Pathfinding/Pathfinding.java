@@ -1,5 +1,6 @@
 package com.erikpoerksen.erikciv.GameLogic.Pathfinding;
 
+import com.erikpoerksen.erikciv.GameLogic.Helpers.GameConstants;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.HelperMethods;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
@@ -144,8 +145,8 @@ public class Pathfinding {
     private void removeLocationsOutsideWorld(ArrayList<Position> locations){
         locations.removeIf(n -> n.getX() < 0);
         locations.removeIf(n -> n.getY() < 0);
-        locations.removeIf(n -> n.getX() >= WorldImpl.rows);
-        locations.removeIf(n -> n.getY() >= WorldImpl.columns);
+        locations.removeIf(n -> n.getX() >= GameConstants.xLength);
+        locations.removeIf(n -> n.getY() >= GameConstants.yLength);
     }
 
     private void removeLocationsWithInvalidTerrain(ArrayList<Position> locations){

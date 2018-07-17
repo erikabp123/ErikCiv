@@ -44,4 +44,22 @@ public class TestHelperMethods {
         assertThat(distance, is(distance));
     }
 
+    @Test
+    public void shouldGive1If4DividedBy5(){
+        int result = HelperMethods.roundedIntegerDivision(4, 5);
+        assertThat(result, is(1));
+    }
+
+    @Test
+    public void shouldGive1If23DividedBy34(){
+        int result = HelperMethods.roundedIntegerDivision(23, 34);
+        assertThat(result, is(1));
+    }
+
+    @Test
+    public void shouldGive10If2456DividedBy235(){
+        int result = HelperMethods.roundedIntegerDivision(2456, 235);
+        assertThat(result, is(10));
+    }
+
 }
