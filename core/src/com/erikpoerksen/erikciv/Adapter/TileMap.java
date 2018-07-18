@@ -6,6 +6,7 @@ import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
 import com.erikpoerksen.erikciv.GameLogic.Structure.City;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Game;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
+import com.erikpoerksen.erikciv.GraphicsConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 public class TileMap {
 
     Game game;
-    public static final int TILE_SIZE = 50;
 
     ArrayList<TerrainTile> terrainLayout;
     ArrayList<CityTile> cityLayout;
@@ -89,8 +89,9 @@ public class TileMap {
         // Flip x (0 becomes n, where n is the largest x coordinate)
         // Swap x and y around
         int xFlipped = (GameConstants.X_LENGTH-1) - position.getX();
-        int xCord = position.getY()*TileMap.TILE_SIZE;
-        int yCord = xFlipped*TileMap.TILE_SIZE;
+        int yOffset = GraphicsConstants.UI_SELECTION_FRAME_HEIGHT;
+        int xCord = position.getY()*GraphicsConstants.TILE_SIZE;
+        int yCord = xFlipped*GraphicsConstants.TILE_SIZE + yOffset;
         return new Position(xCord, yCord);
     }
 

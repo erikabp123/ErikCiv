@@ -13,6 +13,11 @@ public class UnitTile {
     int yCord;
 
     public UnitTile(Unit unit, Position gamePosition){
+        this.texture = convertUnitToUnitTexture(unit);
+        createAndSetCords(gamePosition);
+    }
+
+    public static Texture convertUnitToUnitTexture(Unit unit){
         String fileName = "";
         String directory = "Units/";
         UnitTypes type = unit.getType();
@@ -23,8 +28,7 @@ public class UnitTile {
         } else if(type == UnitTypes.WORKER){
             fileName = "Worker.png";
         }
-        this.texture = new Texture(directory + fileName);
-        createAndSetCords(gamePosition);
+        return new Texture(directory + fileName);
     }
 
     private void createAndSetCords(Position position){

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,8 +17,10 @@ import com.erikpoerksen.erikciv.Adapter.CityTile;
 import com.erikpoerksen.erikciv.Adapter.TerrainTile;
 import com.erikpoerksen.erikciv.Adapter.TileMap;
 import com.erikpoerksen.erikciv.Adapter.UnitTile;
+import com.erikpoerksen.erikciv.GameLogic.Helpers.GameConstants;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Implementations.GameImpl;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,20 +35,29 @@ public class MainGameScreen implements Screen {
     com.erikpoerksen.erikciv.GameLogic.Structure.Game game;
     TileMap tileMap;
     TextButton textButton;
+    Texture selectionFrameBackground;
+    SelectionFrame selectionFrame;
+    ArrayList<Texture> disposableTextures;
+    BitmapFont font;
+
 
     public MainGameScreen(Game g){
         this.gameGraphics = g;
         this.stage = new Stage();
+        this.font = new BitmapFont();
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("Skins/uiskin.json"));
+        this.disposableTextures = new ArrayList<>();
+        this.selectionFrameBackground = new Texture("UI/SelectionFrame.png");
 
+        int yOffset = GraphicsConstants.TILE_SIZE*GameConstants.Y_LENGTH + GraphicsConstants.UI_SELECTION_FRAME_HEIGHT;
         this.textField = new TextField("", skin);
-        this.textField.setPosition(0, 500);
+        this.textField.setPosition(0, yOffset);
         this.textField.setSize(300, 40);
         this.stage.addActor(textField);
 
         this.textButton = new TextButton("Perform", skin);
-        this.textButton.setPosition(300, 500);
+        this.textButton.setPosition(300, yOffset);
         this.textButton.setSize(200, 40);
         this.textButton.addListener(new ClickListener(){
             @Override
@@ -96,6 +109,7 @@ public class MainGameScreen implements Screen {
         };
         this.game = new GameImpl(worldString);
         this.tileMap = new TileMap(game);
+        this.selectionFrame = new SelectionFrame(game);
     }
 
     public void processTextCommand(){
@@ -117,6 +131,15 @@ public class MainGameScreen implements Screen {
             game.endTurn();
             System.out.println("Ending turn. New player in turn: ");
             System.out.println("    ==>  " + game.getPlayerInTurn().getColor());
+        } else if(breakdown[0].equals("s")){
+            Position selectedPosition = new Position(Integer.parseInt(breakdown[2]), Integer.parseInt(breakdown[1]));
+            selectionFrame.selectPosition(selectedPosition);
+            if(selectionFrame.selectedPosition == null){
+                System.out.println("Deselecting");
+            } else {
+                System.out.println("Selecting: ");
+                System.out.println("    ==>  (" + selectedPosition.getY() + "," + selectedPosition.getX() + ")");
+            }
         }
         textField.setText("");
     }
@@ -134,20 +157,56 @@ public class MainGameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
+
         ArrayList<TerrainTile> terrain = tileMap.getTerrainLayout();
         for(TerrainTile tile : terrain){
-            batch.draw(tile.getTexture(), tile.getxCord(), tile.getyCord());
+            Texture terrainTexture = tile.getTexture();
+            disposableTextures.add(terrainTexture);
+            batch.draw(terrainTexture, tile.getxCord(), tile.getyCord());
         }
 
         ArrayList<CityTile> cities = tileMap.getCityLayout();
         for(CityTile tile : cities){
-            batch.draw(tile.getTexture(), tile.getxCord(), tile.getyCord());
+            Texture cityTexture = tile.getTexture();
+            disposableTextures.add(cityTexture);
+            batch.draw(cityTexture, tile.getxCord(), tile.getyCord());
         }
 
         ArrayList<UnitTile> units = tileMap.getUnitLayout();
         for(UnitTile tile : units){
-            batch.draw(tile.getTexture(), tile.getxCord(), tile.getyCord());
+            Texture unitTexture = tile.getTexture();
+            disposableTextures.add(unitTexture);
+            batch.draw(unitTexture, tile.getxCord(), tile.getyCord());
         }
+
+        batch.draw(selectionFrameBackground, 0, 0);
+        Position selectedPosition = selectionFrame.getSelectedPosition();
+        if(selectedPosition != null){
+
+            Texture selectedBrackets = new Texture("UI/Selected.png");
+            disposableTextures.add(selectedBrackets);
+            Position converted = TileMap.convertPosition(selectedPosition);
+            batch.draw(selectedBrackets, converted.getX(), converted.getY());
+
+            Texture terrainTexture = selectionFrame.getTerrainTexture();
+            disposableTextures.add(terrainTexture);
+            batch.draw(terrainTexture, 30, 50);
+
+            if(game.getCityAtPosition(selectedPosition) != null){
+                Texture cityTexture = selectionFrame.getCityTexture();
+                disposableTextures.add(cityTexture);
+                batch.draw(cityTexture, 115, 50);
+            }
+            Unit unit = game.getUnitAtPosition(selectedPosition);
+            if(unit != null){
+                Texture unitTexture = selectionFrame.getUnitTexture();
+                disposableTextures.add(unitTexture);
+                batch.draw(unitTexture, 270, 107);
+                font.draw(batch, unit.getRemainingMoveCount() + "/" + unit.getDefaultMoveCount(), 330, 77);
+                font.draw(batch, unit.getCurrentHealth() + "/" + unit.getMaxHealth(), 300, 37);
+            }
+        }
+
         batch.end();
         stage.act(delta);
         stage.draw();
@@ -177,5 +236,9 @@ public class MainGameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         stage.dispose();
+        selectionFrameBackground.dispose();
+        for(Texture texture : disposableTextures){
+            texture.dispose();
+        }
     }
 }

@@ -14,11 +14,15 @@ public class CityTile {
     int yCord;
 
     public CityTile(City city, Position gamePosition){
+        this.texture = convertCityToCityTexture(city);
+        createAndSetCords(gamePosition);
+    }
+
+    public static Texture convertCityToCityTexture(City city){
         String fileName = "";
         String directory = "Cities/";
         fileName = "City.png";
-        this.texture = new Texture(directory + fileName);
-        createAndSetCords(gamePosition);
+        return new Texture(directory + fileName);
     }
 
     private void createAndSetCords(Position position){

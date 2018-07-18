@@ -12,6 +12,11 @@ public class TerrainTile {
     int yCord;
 
     public TerrainTile(TerrainTypes type, Position gamePosition){
+        this.texture = convertTerrainTypeToTerrainTexture(type);
+        createAndSetCords(gamePosition);
+    }
+
+    public static Texture convertTerrainTypeToTerrainTexture(TerrainTypes type){
         String fileName = "";
         String directory = "Terrain/";
         if(type == TerrainTypes.MOUNTAIN){
@@ -25,8 +30,7 @@ public class TerrainTile {
         } else if(type == TerrainTypes.PLAINS){
             fileName = "Plains.png";
         }
-        this.texture = new Texture(directory + fileName);
-        createAndSetCords(gamePosition);
+        return new Texture(directory + fileName);
     }
 
     private void createAndSetCords(Position position){
