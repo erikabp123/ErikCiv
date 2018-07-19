@@ -1,13 +1,13 @@
 package com.erikpoerksen.erikciv;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -43,7 +43,19 @@ public class MainGameScreen implements Screen {
 
     public MainGameScreen(Game g){
         this.gameGraphics = g;
-        this.stage = new Stage();
+        this.stage = new Stage(){
+            @Override
+            public boolean keyUp (int keycode) {
+                if(keycode == Input.Keys.M){
+                    System.out.println("Changed to move!");
+                    GraphicsConstants.MOUSEMODE = MouseMode.MOVE;
+                } else if(keycode == Input.Keys.S){
+                    System.out.println("Changed to select");
+                    GraphicsConstants.MOUSEMODE = MouseMode.SELECT;
+                }
+                return false;
+            }
+        };
         this.font = new BitmapFont();
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("Skins/uiskin.json"));
@@ -66,6 +78,8 @@ public class MainGameScreen implements Screen {
             }
         });
         this.stage.addActor(textButton);
+
+        setupClickRegistration();
 
 
 
@@ -144,7 +158,83 @@ public class MainGameScreen implements Screen {
         textField.setText("");
     }
 
+    private void selectPosition(Position selectedPosition){
+        selectionFrame.selectPosition(selectedPosition);
+        if(selectionFrame.selectedPosition == null){
+            System.out.println("Deselecting");
+        } else {
+            System.out.println("Selecting: ");
+            System.out.println("    ==>  (" + selectedPosition.getY() + "," + selectedPosition.getX() + ")");
+        }
+    }
 
+    private void setupClickRegistration(){
+        stage.addListener(new ClickListener(){
+            @Override
+            public void clicked (InputEvent event, float x, float y) {
+                if(!coordinatesAreInsideWorld(x, y)){
+                    return;
+                }
+                Position tilePosition = convertClickCoordinatesToGamePosition(x, y);
+                System.out.println(GraphicsConstants.MOUSEMODE);
+                if(GraphicsConstants.MOUSEMODE == MouseMode.SELECT){
+                    selectionClick(tilePosition);
+                } else if(GraphicsConstants.MOUSEMODE == MouseMode.MOVE){
+                    if(moveClick(tilePosition)){
+                        selectionClick(tilePosition); // update selection
+                    }
+                } else if(GraphicsConstants.MOUSEMODE == MouseMode.ATTACK){
+                    // TODO: Should attacking be separate from moving?
+                } else if(GraphicsConstants.MOUSEMODE == MouseMode.SPECIAL){
+                    // TODO: Implement special
+                }
+
+            }
+        });
+    }
+
+    private void selectionClick(Position tilePosition){
+        selectPosition(tilePosition);
+    }
+
+    private boolean moveClick(Position tilePosition){
+        if(selectionFrame.getSelectedPosition() == null){
+            return false;
+        }
+        System.out.println("Attempting: MOVE (" + selectionFrame.selectedPosition.getY() + "," +
+                selectionFrame.selectedPosition.getX() + ") to (" + tilePosition.getY() + "," +
+                tilePosition.getX() + ")");
+        Boolean result = game.moveUnit(selectionFrame.selectedPosition, tilePosition);
+        System.out.println("    ==>  " + result);
+        if(result){
+            tileMap.updateUnitLayout();
+        }
+        return result;
+    }
+
+    private boolean coordinatesAreInsideWorld(float x, float y){
+        if(x < 0 || y < 0){
+            return false;
+        }
+        int yOffset = GraphicsConstants.UI_SELECTION_FRAME_HEIGHT;
+        if(y < yOffset){
+            return false;
+        }
+        if(y >= yOffset + GraphicsConstants.WORLD_HEIGHT){
+            return false;
+        }
+        if(x >= GraphicsConstants.WORLD_WIDTH){
+            return false;
+        }
+        return true;
+    }
+
+    private Position convertClickCoordinatesToGamePosition(float x, float y){
+        int yCoord = ((int) x)/GraphicsConstants.TILE_SIZE;
+        int xCoord = ((int) y-GraphicsConstants.UI_SELECTION_FRAME_HEIGHT)/GraphicsConstants.TILE_SIZE;
+        int xFlipped = GameConstants.X_LENGTH - 1 - xCoord;
+        return new Position(xFlipped, yCoord);
+    }
 
     @Override
     public void show() {
@@ -158,58 +248,92 @@ public class MainGameScreen implements Screen {
 
         batch.begin();
 
+        drawTerrain();
+        drawCities();
+        drawUnits();
+        drawUI();
+
+        batch.end();
+        stage.act(delta);
+        stage.draw();
+    }
+
+    private void drawTerrain(){
         ArrayList<TerrainTile> terrain = tileMap.getTerrainLayout();
         for(TerrainTile tile : terrain){
             Texture terrainTexture = tile.getTexture();
             disposableTextures.add(terrainTexture);
             batch.draw(terrainTexture, tile.getxCord(), tile.getyCord());
         }
+    }
 
+    private void drawCities(){
         ArrayList<CityTile> cities = tileMap.getCityLayout();
         for(CityTile tile : cities){
             Texture cityTexture = tile.getTexture();
             disposableTextures.add(cityTexture);
             batch.draw(cityTexture, tile.getxCord(), tile.getyCord());
         }
+    }
 
+    private void drawUnits(){
         ArrayList<UnitTile> units = tileMap.getUnitLayout();
         for(UnitTile tile : units){
             Texture unitTexture = tile.getTexture();
             disposableTextures.add(unitTexture);
             batch.draw(unitTexture, tile.getxCord(), tile.getyCord());
         }
+    }
 
-        batch.draw(selectionFrameBackground, 0, 0);
+    private void drawUI(){
+        drawUIBackground();
+        drawSelectionFrameContents();
+    }
+
+    private void drawSelectionFrameContents(){
         Position selectedPosition = selectionFrame.getSelectedPosition();
         if(selectedPosition != null){
-
-            Texture selectedBrackets = new Texture("UI/Selected.png");
-            disposableTextures.add(selectedBrackets);
-            Position converted = TileMap.convertPosition(selectedPosition);
-            batch.draw(selectedBrackets, converted.getX(), converted.getY());
-
-            Texture terrainTexture = selectionFrame.getTerrainTexture();
-            disposableTextures.add(terrainTexture);
-            batch.draw(terrainTexture, 30, 50);
-
-            if(game.getCityAtPosition(selectedPosition) != null){
-                Texture cityTexture = selectionFrame.getCityTexture();
-                disposableTextures.add(cityTexture);
-                batch.draw(cityTexture, 115, 50);
-            }
-            Unit unit = game.getUnitAtPosition(selectedPosition);
-            if(unit != null){
-                Texture unitTexture = selectionFrame.getUnitTexture();
-                disposableTextures.add(unitTexture);
-                batch.draw(unitTexture, 270, 107);
-                font.draw(batch, unit.getRemainingMoveCount() + "/" + unit.getDefaultMoveCount(), 330, 77);
-                font.draw(batch, unit.getCurrentHealth() + "/" + unit.getMaxHealth(), 300, 37);
-            }
+            drawSelectionBrackets(selectedPosition);
+            drawSelectedTerrain();
+            drawSelectedCity(selectedPosition);
+            drawSelectedUnit(selectedPosition);
         }
+    }
 
-        batch.end();
-        stage.act(delta);
-        stage.draw();
+    private void drawSelectedUnit(Position selectedPosition){
+        Unit unit = game.getUnitAtPosition(selectedPosition);
+        if(unit != null){
+            Texture unitTexture = selectionFrame.getUnitTexture();
+            disposableTextures.add(unitTexture);
+            batch.draw(unitTexture, 270, 107);
+            font.draw(batch, unit.getRemainingMoveCount() + "/" + unit.getDefaultMoveCount(), 330, 77);
+            font.draw(batch, unit.getCurrentHealth() + "/" + unit.getMaxHealth(), 300, 37);
+        }
+    }
+
+    private void drawSelectionBrackets(Position selectedPosition){
+        Texture selectedBrackets = new Texture("UI/Selected.png");
+        disposableTextures.add(selectedBrackets);
+        Position converted = TileMap.convertPosition(selectedPosition);
+        batch.draw(selectedBrackets, converted.getX(), converted.getY());
+    }
+
+    private void drawSelectedTerrain(){
+        Texture terrainTexture = selectionFrame.getTerrainTexture();
+        disposableTextures.add(terrainTexture);
+        batch.draw(terrainTexture, 30, 50);
+    }
+
+    private void drawSelectedCity(Position selectedPosition){
+        if(game.getCityAtPosition(selectedPosition) != null){
+            Texture cityTexture = selectionFrame.getCityTexture();
+            disposableTextures.add(cityTexture);
+            batch.draw(cityTexture, 115, 50);
+        }
+    }
+
+    private void drawUIBackground(){
+        batch.draw(selectionFrameBackground, 0, 0);
     }
 
     @Override
