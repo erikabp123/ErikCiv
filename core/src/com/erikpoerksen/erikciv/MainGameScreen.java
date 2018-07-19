@@ -201,9 +201,9 @@ public class MainGameScreen implements Screen {
         if(selectionFrame.getSelectedPosition() == null){
             return false;
         }
-        System.out.println("Attempting: MOVE (" + selectionFrame.selectedPosition.getY() + "," +
-                selectionFrame.selectedPosition.getX() + ") to (" + tilePosition.getY() + "," +
-                tilePosition.getX() + ")");
+        System.out.println("Attempting: MOVE (" + selectionFrame.selectedPosition.getX() + "," +
+                selectionFrame.selectedPosition.getY() + ") to (" + tilePosition.getX() + "," +
+                tilePosition.getY() + ")");
         Boolean result = game.moveUnit(selectionFrame.selectedPosition, tilePosition);
         System.out.println("    ==>  " + result);
         if(result){
