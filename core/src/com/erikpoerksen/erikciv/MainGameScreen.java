@@ -43,6 +43,7 @@ public class MainGameScreen implements Screen {
 
     public MainGameScreen(Game g){
         this.gameGraphics = g;
+        this.font = new BitmapFont();
         this.stage = new Stage(){
             @Override
             public boolean keyUp (int keycode) {
@@ -50,17 +51,30 @@ public class MainGameScreen implements Screen {
                     System.out.println("Changed to move!");
                     GraphicsConstants.MOUSEMODE = MouseMode.MOVE;
                 } else if(keycode == Input.Keys.S){
-                    System.out.println("Changed to select");
+                    System.out.println("Changed to select!");
                     GraphicsConstants.MOUSEMODE = MouseMode.SELECT;
+                } else if(keycode == Input.Keys.P){
+                    System.out.println("Changed to special!");
+                    GraphicsConstants.MOUSEMODE = MouseMode.SPECIAL;
+                } else if(keycode == Input.Keys.A){
+                    System.out.println("Changed to attack!");
+                    GraphicsConstants.MOUSEMODE = MouseMode.ATTACK;
+                } else if(keycode == Input.Keys.TAB){
+                    game.endTurn();
+                    System.out.println("Ending turn! Now " + game.getPlayerInTurn().getColor() + "'s turn!");
                 }
                 return false;
             }
         };
-        this.font = new BitmapFont();
+        setupClickRegistration();
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("Skins/uiskin.json"));
         this.disposableTextures = new ArrayList<>();
         this.selectionFrameBackground = new Texture("UI/SelectionFrame.png");
+
+
+
+
 
         int yOffset = GraphicsConstants.TILE_SIZE*GameConstants.Y_LENGTH + GraphicsConstants.UI_SELECTION_FRAME_HEIGHT;
         this.textField = new TextField("", skin);
@@ -78,8 +92,6 @@ public class MainGameScreen implements Screen {
             }
         });
         this.stage.addActor(textButton);
-
-        setupClickRegistration();
 
 
 
@@ -171,7 +183,8 @@ public class MainGameScreen implements Screen {
     private void setupClickRegistration(){
         stage.addListener(new ClickListener(){
             @Override
-            public void clicked (InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("clicked!");
                 if(!coordinatesAreInsideWorld(x, y)){
                     return;
                 }
@@ -184,9 +197,9 @@ public class MainGameScreen implements Screen {
                         selectionClick(tilePosition); // update selection
                     }
                 } else if(GraphicsConstants.MOUSEMODE == MouseMode.ATTACK){
-                    // TODO: Should attacking be separate from moving?
+                    attackClick(tilePosition);
                 } else if(GraphicsConstants.MOUSEMODE == MouseMode.SPECIAL){
-                    // TODO: Implement special
+                    specialClick(tilePosition);
                 }
 
             }
@@ -207,6 +220,38 @@ public class MainGameScreen implements Screen {
         Boolean result = game.moveUnit(selectionFrame.selectedPosition, tilePosition);
         System.out.println("    ==>  " + result);
         if(result){
+            tileMap.updateUnitLayout();
+        }
+        return result;
+    }
+
+    private boolean specialClick(Position tilePosition){
+        if(selectionFrame.getSelectedPosition() == null){
+            return false;
+        }
+        System.out.println("Attempting: SPECIAL (" + selectionFrame.selectedPosition.getX() + "," +
+                selectionFrame.selectedPosition.getY() + ") to (" + tilePosition.getX() + "," +
+                tilePosition.getY() + ")");
+        Boolean result = game.performSpecialActionAt(selectionFrame.getSelectedPosition(), tilePosition);
+        System.out.println("    ==>  " + result);
+        if(result){
+            tileMap.updateCityLayout();
+            tileMap.updateUnitLayout();
+        }
+        return result;
+    }
+
+    private boolean attackClick(Position tilePosition){
+        if(selectionFrame.getSelectedPosition() == null){
+            return false;
+        }
+        System.out.println("Attempting: Attack (" + selectionFrame.selectedPosition.getX() + "," +
+                selectionFrame.selectedPosition.getY() + ") to (" + tilePosition.getX() + "," +
+                tilePosition.getY() + ")");
+        Boolean result = game.attackEnemy(selectionFrame.selectedPosition, tilePosition);
+        System.out.println("    ==>  " + result);
+        if(result){
+            tileMap.updateCityLayout();
             tileMap.updateUnitLayout();
         }
         return result;

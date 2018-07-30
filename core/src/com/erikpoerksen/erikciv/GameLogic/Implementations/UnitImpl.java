@@ -31,12 +31,12 @@ public class UnitImpl implements Unit {
             this.remainingMoveCount = this.defaultMoveCount = 4;
             this.attack = 4;
             this.defense = 2;
-            this.currentHealth = this.maxHealth = 10;
+            this.currentHealth = this.maxHealth = 8;
         } else if(type == UnitTypes.LEGION){
             this.remainingMoveCount = this.defaultMoveCount = 4;
             this.attack = 3;
             this.defense = 5;
-            this.currentHealth = this.maxHealth = 15;
+            this.currentHealth = this.maxHealth = 10;
         }
     }
 
@@ -48,6 +48,17 @@ public class UnitImpl implements Unit {
         if(getType() == UnitTypes.WORKER){
             game.placeCityAtPosition(targetPosition, game.getPlayerInTurn());
             game.getWorld().removeUnit(targetPosition);
+            return;
+        }
+        if(getType() == UnitTypes.LEGION){
+            // add legion fortification later
+        } if(getType() == UnitTypes.ARCHER){
+            Unit enemy = game.getUnitAtPosition(targetPosition);
+            enemy.sustainDamage(getAttack());
+            if(enemy.getCurrentHealth() <= 0){
+                game.getWorld().removeUnit(targetPosition);
+            }
+            remainingMoveCount = 0;
         }
     }
 

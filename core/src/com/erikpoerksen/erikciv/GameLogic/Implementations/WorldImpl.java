@@ -130,10 +130,13 @@ public class WorldImpl implements World {
     }
 
     @Override
-    public Unit getUnitAtPosition(Position position) {
+    public Unit[] getUnitsAtPosition(Position position) {
         int x = position.getX();
         int y = position.getY();
-        return world[x][y].getOccupyingUnit();
+        Unit[] units = new Unit[2];
+        units[0] = world[x][y].getOccupyingUnit();
+        units[1] = world[x][y].getTransitionalUnit();
+        return units;
     }
 
     @Override
@@ -152,11 +155,11 @@ public class WorldImpl implements World {
 
     @Override
     public void moveUnit(Position from, Position to) {
-        Unit toBeMoved = getUnitAtPosition(from);
+        Unit toBeMoved = getUnitsAtPosition(from)[1];
         int distance = HelperMethods.calculateShortestDirectDistance(from, to);
         toBeMoved.move(distance);
-        world[to.getX()][to.getY()].setOccupyingUnit(toBeMoved);
-        world[from.getX()][from.getY()].setOccupyingUnit(null);
+        world[to.getX()][to.getY()].setTransitionalUnit(toBeMoved);
+        world[from.getX()][from.getY()].setTransitionalUnit(null);
     }
 
     @Override
@@ -165,7 +168,7 @@ public class WorldImpl implements World {
         for(int row = 0; row<rows; row++){
             for(int column = 0; column<columns; column++){
                 Position curPos = new Position(row, column);
-                Unit unit = getUnitAtPosition(curPos);
+                Unit unit = getUnitsAtPosition(curPos)[0];
                 if(unit != null){
                     units.add(unit);
                 }
@@ -219,11 +222,24 @@ public class WorldImpl implements World {
         return cities;
     }
 
+    public void setUnitAsTransitional(Position position){
+        Tile tile = world[position.getX()][position.getY()];
+        tile.setTransitionalUnit(tile.getOccupyingUnit());
+        tile.setOccupyingUnit(null);
+    }
+
+    public void setUnitAsOccupying(Position position){
+        Tile tile = world[position.getX()][position.getY()];
+        tile.setOccupyingUnit(tile.getTransitionalUnit());
+        tile.setTransitionalUnit(null);
+    }
+
     private class Tile {
 
         private TerrainTypes terrain;
         private Unit occupyingUnit;
         private City city;
+        private Unit transitionalUnit;
 
         public void setTerrain(TerrainTypes contents){
             this.terrain = contents;
@@ -231,6 +247,10 @@ public class WorldImpl implements World {
 
         public void setOccupyingUnit(Unit contents){
             this.occupyingUnit = contents;
+        }
+
+        public void setTransitionalUnit(Unit contents){
+            this.transitionalUnit = contents;
         }
 
         public void setCity(City contents){
@@ -247,6 +267,10 @@ public class WorldImpl implements World {
 
         public Unit getOccupyingUnit(){
             return occupyingUnit;
+        }
+
+        public Unit getTransitionalUnit(){
+            return transitionalUnit;
         }
 
 

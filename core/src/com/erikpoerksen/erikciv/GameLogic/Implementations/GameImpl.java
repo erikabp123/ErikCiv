@@ -37,8 +37,8 @@ public class GameImpl implements Game {
         if(getTerrainAtPosition(to) == TerrainTypes.OCEAN || getTerrainAtPosition(to) == TerrainTypes.MOUNTAIN){
             return false;
         }
-        Unit atPosition = getUnitAtPosition(to);
-        if(atPosition != null && atPosition.getOwner() == getPlayerInTurn()){
+        Unit unitAtPosition = getUnitAtPosition(to);
+        if(unitAtPosition != null){
             return false;
         }
         ArrayList<Node> path = new Pathfinding(from, to, this).getPath();
@@ -48,46 +48,81 @@ public class GameImpl implements Game {
         if(path.size() > unitBeingMoved.getRemainingMoveCount()){
             return false;
         }
+        world.setUnitAsTransitional(from);
         for(Node node : path){
             Position pathFrom = node.getOrigin().getLocation();
             Position pathTo = node.getLocation();
             System.out.println("Moving from: " + pathFrom + " to " + pathTo);
-            if(getUnitAtPosition(pathTo) != null){
-                System.out.println("Unit at " + pathTo + "... fighting!" );
-                if(attackEnemy(pathFrom, pathTo)){
-                    world.moveUnit(pathFrom, pathTo);
-                }
-            } else {
-                world.moveUnit(pathFrom, pathTo);
-            }
+            world.moveUnit(pathFrom, pathTo);
         }
+        world.setUnitAsOccupying(to);
         return true;
     }
 
+    @Override
     public boolean attackEnemy(Position attacker, Position defender){
         Unit attackingUnit = getUnitAtPosition(attacker);
         Unit defendingUnit = getUnitAtPosition(defender);
 
+        if(defendingUnit == null || attackingUnit == null){
+            return false;
+        }
+        if(attackingUnit.getOwner() != getPlayerInTurn()){
+            return false;
+        }
+        if(defendingUnit.getOwner() == attackingUnit.getOwner()){
+            return false;
+        }
+        if(HelperMethods.calculateShortestDirectDistance(attacker, defender) > 1 || attackingUnit.getRemainingMoveCount() < 1){
+            return false;
+        }
+
         defendingUnit.sustainDamage(attackingUnit.getAttack());
         attackingUnit.sustainDamage(defendingUnit.getAttack());
-        attackingUnit.move(attackingUnit.getRemainingMoveCount()); //set move count to 0 for attacker
 
-        boolean attackerDied = (attackingUnit.getCurrentHealth() < 0);
-        boolean defenderDied = (defendingUnit.getCurrentHealth() < 0);
+        boolean attackerDied = (attackingUnit.getCurrentHealth() <= 0);
+        boolean defenderDied = (defendingUnit.getCurrentHealth() <= 0);
 
         if(attackerDied){
-            messages.addMessage(attackingUnit.getOwner().getColor() + "'s " + attackingUnit.getType() + " died in combat!");
             world.removeUnit(attacker); // attacker died
         }
         if(defenderDied){
-            messages.addMessage(defendingUnit.getOwner().getColor() + "'s " + defendingUnit.getType() + " died in combat!");
             world.removeUnit(defender);
         }
-        if(attackerDied || !defenderDied){
-            return  false;
+        if(!attackerDied && defenderDied){
+            world.setUnitAsTransitional(attacker);
+            world.moveUnit(attacker, defender);
         }
+        attackingUnit.move(attackingUnit.getRemainingMoveCount()); //set move count to 0 for attacker
         return true;
     }
+
+    @Override
+    public boolean performSpecialActionAt(Position unit, Position target){
+        Unit performer = getUnitAtPosition(unit);
+        if(performer == null){
+            return false;
+        }
+        if(performer.getOwner() !=  getPlayerInTurn()){
+            return false;
+        }
+        if(performer.getRemainingMoveCount() == 0){
+            return false;
+        }
+        if(HelperMethods.calculateShortestDirectDistance(unit, target) > 1){
+            return false;
+        }
+        if(performer.getType() == UnitTypes.WORKER && getCityAtPosition(unit) != null){
+            return false;
+        }
+        Unit targetUnit = getUnitAtPosition(target);
+        if(performer.getType() == UnitTypes.ARCHER && (targetUnit == null || targetUnit.getOwner() == performer.getOwner())){
+            return false;
+        }
+        performer.performSpecialAction(target, this);
+        return true;
+    }
+
 
 
     @Override
@@ -102,7 +137,7 @@ public class GameImpl implements Game {
 
     @Override
     public Unit getUnitAtPosition(Position position) {
-        return world.getUnitAtPosition(position);
+        return world.getUnitsAtPosition(position)[0];
     }
 
     @Override
@@ -138,7 +173,7 @@ public class GameImpl implements Game {
             if(city.getOwner() == getPlayerInTurn()){
                 city.increaseProductionCount(1);
                 UnitTypes cityProduction = city.getProduction();
-                if(world.getUnitAtPosition(position) != null){
+                if(world.getUnitsAtPosition(position)[0] != null){
                     continue; // If there is already a unit on the city tile, you can't spawn a new one
                 }
                 boolean productionCompleted = city.finishProduction();

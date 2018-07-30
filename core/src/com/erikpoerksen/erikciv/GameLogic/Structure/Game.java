@@ -25,4 +25,8 @@ public interface Game {
 
     int getAge();
 
+    boolean attackEnemy(Position attacker, Position defender);
+
+    boolean performSpecialActionAt(Position unit, Position target);
+
 }

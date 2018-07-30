@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public interface World {
 
-    Unit getUnitAtPosition(Position position);
+    Unit[] getUnitsAtPosition(Position position);
 
     TerrainTypes getTerrainAtPosition(Position position);
 
@@ -29,5 +29,8 @@ public interface World {
 
     void placeUnitAtPosition(Position position, Player owner, UnitTypes type);
 
+    void setUnitAsTransitional(Position position);
+
+    void setUnitAsOccupying(Position position);
 
 }
