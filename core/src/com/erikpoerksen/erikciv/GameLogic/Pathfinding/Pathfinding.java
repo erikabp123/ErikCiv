@@ -6,6 +6,7 @@ import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.TerrainTypes;
 import com.erikpoerksen.erikciv.GameLogic.Implementations.WorldImpl;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Game;
+import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,9 @@ public class Pathfinding {
         this.queue = new ArrayList<>();
         this.processed = new ArrayList<>();
         this.path = new ArrayList<>();
+        if(destinationIsInvalid()){
+            return;
+        }
         int directDistance = HelperMethods.calculateShortestDirectDistance(from, to);
         Node startingNode = new Node(null, directDistance, from);
         queue.add(startingNode);
@@ -33,6 +37,23 @@ public class Pathfinding {
         extractPath();
         Collections.reverse(path);
     }
+
+    private boolean destinationIsInvalid(){
+        Unit unitTo = game.getUnitAtPosition(from);
+        Unit unitFrom = game.getUnitAtPosition(to);
+        if(unitFrom == null){
+            return true;
+        }
+        if(unitTo != null && unitTo.getOwner() == unitFrom.getOwner()){
+            return true;
+        }
+        TerrainTypes terrain = game.getTerrainAtPosition(from);
+        if(terrain == TerrainTypes.MOUNTAIN || terrain == TerrainTypes.OCEAN){
+            return true;
+        }
+        return false;
+    }
+
 
     public ArrayList<Node> getPath(){
         return path;

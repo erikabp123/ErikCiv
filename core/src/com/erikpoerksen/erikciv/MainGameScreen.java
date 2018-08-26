@@ -20,6 +20,8 @@ import com.erikpoerksen.erikciv.Adapter.UnitTile;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.GameConstants;
 import com.erikpoerksen.erikciv.GameLogic.Helpers.Position;
 import com.erikpoerksen.erikciv.GameLogic.Implementations.GameImpl;
+import com.erikpoerksen.erikciv.GameLogic.Pathfinding.Node;
+import com.erikpoerksen.erikciv.GameLogic.Pathfinding.Pathfinding;
 import com.erikpoerksen.erikciv.GameLogic.Structure.Unit;
 
 import java.awt.*;
@@ -39,6 +41,7 @@ public class MainGameScreen implements Screen {
     SelectionFrame selectionFrame;
     ArrayList<Texture> disposableTextures;
     BitmapFont font;
+    Position cursorPosition;
 
 
     public MainGameScreen(Game g){
@@ -73,7 +76,7 @@ public class MainGameScreen implements Screen {
         this.selectionFrameBackground = new Texture("UI/SelectionFrame.png");
 
 
-
+        this.cursorPosition = convertCursorCoordinatesToGamePosition(Gdx.input.getX(), Gdx.input.getY());
 
 
         int yOffset = GraphicsConstants.TILE_SIZE*GameConstants.Y_LENGTH + GraphicsConstants.UI_SELECTION_FRAME_HEIGHT;
@@ -184,7 +187,6 @@ public class MainGameScreen implements Screen {
         stage.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("clicked!");
                 if(!coordinatesAreInsideWorld(x, y)){
                     return;
                 }
@@ -274,7 +276,14 @@ public class MainGameScreen implements Screen {
         return true;
     }
 
-    private Position convertClickCoordinatesToGamePosition(float x, float y){
+    public Position convertCursorCoordinatesToGamePosition(int cursorX, int cursorY){
+        int yOffset = GraphicsConstants.UI_COMMAND_HEIGHT;
+        int x = cursorX/GraphicsConstants.TILE_SIZE;
+        int y = (cursorY  - yOffset)/GraphicsConstants.TILE_SIZE;
+        return new Position(y, x);
+    }
+
+    public Position convertClickCoordinatesToGamePosition(float x, float y){
         int yCoord = ((int) x)/GraphicsConstants.TILE_SIZE;
         int xCoord = ((int) y-GraphicsConstants.UI_SELECTION_FRAME_HEIGHT)/GraphicsConstants.TILE_SIZE;
         int xFlipped = GameConstants.X_LENGTH - 1 - xCoord;
@@ -297,11 +306,57 @@ public class MainGameScreen implements Screen {
         drawCities();
         drawUnits();
         drawUI();
+        updateCursorPosition();
+        if(GraphicsConstants.MOUSEMODE == MouseMode.MOVE){
+            drawPathfinding();
+        }
 
         batch.end();
         stage.act(delta);
         stage.draw();
     }
+
+    private void updateCursorPosition(){
+        if(!isCursorInsideWorld()){
+            return;
+        }
+        cursorPosition = convertCursorCoordinatesToGamePosition(Gdx.input.getX(), Gdx.input.getY());
+    }
+
+    private boolean isCursorInsideWorld(){
+        int yOffset = GraphicsConstants.UI_COMMAND_HEIGHT;
+        int x = Gdx.input.getX();
+        int y = Gdx.input.getY() - yOffset;
+        if(x < 0 || x >= GraphicsConstants.WORLD_WIDTH*GraphicsConstants.TILE_SIZE){
+            System.out.println(x);
+            return false;
+        }
+        if(y < 0 || y >= GraphicsConstants.WORLD_HEIGHT*GraphicsConstants.TILE_SIZE){
+            return false;
+        }
+        return true;
+    }
+
+    private void drawPathfinding(){
+        ArrayList<Node> path = (new Pathfinding(cursorPosition, selectionFrame.selectedPosition, game)).getPath();
+        if(path.isEmpty()){
+            return;
+        }
+        path.remove(path.size() - 1);
+        path.add(0, new Node(null, 1, cursorPosition));
+        int moveCount = game.getUnitAtPosition(selectionFrame.selectedPosition).getRemainingMoveCount();
+        for(int i=path.size(); i>moveCount; i--){
+            path.remove(0);
+        }
+        for(Node node : path){
+            Texture nodeTexture = new Texture("UI/Destination.png");
+            disposableTextures.add(nodeTexture);
+            Position convertedPos = TileMap.convertPosition(node.getLocation());
+            batch.draw(nodeTexture, convertedPos.getX(), convertedPos.getY());
+        }
+    }
+
+
 
     private void drawTerrain(){
         ArrayList<TerrainTile> terrain = tileMap.getTerrainLayout();

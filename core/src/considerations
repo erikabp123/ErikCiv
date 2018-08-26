@@ -1,0 +1,3 @@
+USE DECORATOR!!!!
+EXTEND GameImpl
+Print messages for moving, and update graphics when relevant methods are called?
